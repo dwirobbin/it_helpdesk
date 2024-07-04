@@ -8,6 +8,8 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { useForm } from '@inertiajs/vue3';
 import html2pdf from 'html2pdf.js';
 import { usePermission } from "@/Composables/permissions";
+import * as XLSXStyle from 'xlsx-js-style';
+import { saveAs } from 'file-saver';
 
 const { hasAnyRole } = usePermission();
 
@@ -58,6 +60,75 @@ const onExportToPdf = () => {
     };
 
     html2pdf().from(element).set(opt).save();
+};
+
+// Function to get table data as Array of Arrays (AoA)
+const getTableData = (tableId) => {
+    const tableElement = document.getElementById(tableId);
+    const headerCells = tableElement.querySelectorAll('thead th');
+    const header = Array.from(headerCells).map(cell => cell.textContent.trim());
+
+    const rows = tableElement.querySelectorAll('tbody tr');
+    const aoa = [];
+    rows.forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td').forEach(cell => {
+            rowData.push(cell.textContent.trim());
+        });
+        aoa.push(rowData);
+    });
+
+    return { header, aoa };
+};
+
+// Function to create worksheet with header and data, applying styles
+const createWorksheet = (header, aoa) => {
+    const ws = XLSXStyle.utils.aoa_to_sheet([header, ...aoa]);
+
+    // Set header row to bold
+    const headerRange = XLSXStyle.utils.decode_range(ws['!ref']);
+    for (let i = headerRange.s.c; i <= headerRange.e.c; i++) {
+        const cellAddress = XLSXStyle.utils.encode_cell({ r: headerRange.s.r, c: i });
+        const cell = ws[cellAddress];
+        if (cell && cell.t === 's') { // if the cell is a text cell
+            if (!cell.s) cell.s = {}; // ensure cell has a style object
+            cell.s.font = { bold: true }; // set font bold
+        }
+    }
+
+    return ws;
+};
+
+// Function to adjust column widths based on content length
+const adjustColumnWidths = (ws, aoa) => {
+    const colWidths = [];
+    const extraWidth = 2; // Additional width for each column
+
+    aoa.forEach(row => {
+        row.forEach((cell, colIndex) => {
+            const cellLength = cell ? String(cell).length : 0;
+            const adjustedWidth = cellLength + extraWidth;
+            if (!colWidths[colIndex] || adjustedWidth > colWidths[colIndex]) {
+                colWidths[colIndex] = adjustedWidth;
+            }
+        });
+    });
+
+    ws['!cols'] = colWidths.map(width => ({ wch: width }));
+};
+
+const onExportToExcel = () => {
+    const { header, aoa } = getTableData('table');
+
+    const wb = XLSXStyle.utils.book_new();
+    const ws = createWorksheet(header, aoa);
+    adjustColumnWidths(ws, aoa);
+
+    XLSXStyle.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    const wbout = XLSXStyle.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    saveAs(blob, 'data.xlsx');
 };
 </script>
 
@@ -130,7 +201,7 @@ const onExportToPdf = () => {
             <div v-if="hasAnyRole(['Super Admin', 'It Support']) && tickets !== undefined"
                 class="mt-4 p-4 bg-white block border border-gray-200 rounded-lg shadow-sm">
                 <!-- Card Header -->
-                <div class="mb-1 w-full text-center">
+                <div class="mb-1 w-full text-center space-y-2 sm:space-x-4 sm:space-y-0">
                     <PrimaryButton type="button" @click="onExportToPdf" class="inline-flex items-center justify-center">
                         <svg class="-ml-1 mr-1 h-6 w-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                             viewBox="0 0 24 24">
@@ -139,6 +210,14 @@ const onExportToPdf = () => {
                         </svg>
                         Download As PDF
                     </PrimaryButton>
+                    <PrimaryButton type="button" @click="onExportToExcel" class="inline-flex items-center justify-center">
+                        <svg class="-ml-1 mr-1 h-6 w-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                            viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 13V4M7 14H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2m-1-5-4 5-4-5m9 8h.01" />
+                        </svg>
+                        Download As Excel
+                    </PrimaryButton>
                 </div>
 
                 <!-- Card Body -->
@@ -146,7 +225,7 @@ const onExportToPdf = () => {
                     <div id="element-to-convert" class="overflow-x-auto rounded-lg">
                         <div class="align-middle inline-block">
                             <div class="shadow overflow-hidden">
-                                <table class="table-fixed divide-y xl:w-full divide-gray-200 mt-0 pt-0">
+                                <table id="table" class="table-fixed divide-y xl:w-full divide-gray-200 mt-0 pt-0">
                                     <thead class="bg-gray-100">
                                         <tr>
                                             <th scope="col"

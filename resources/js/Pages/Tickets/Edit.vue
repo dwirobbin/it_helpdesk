@@ -83,7 +83,7 @@ const onUpdate = () => form.post(route('tickets.update', { ticket: props.ticket.
             <form @submit.prevent="onUpdate" id="update" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-6">
                     <div>
-                        <InputLabel for="title" value="Keluhan" />
+                        <InputLabel for="title" value="Keluhan" required />
                         <TextInput type="text" id="title" v-model="form.title" placeholder="Keluhan..." autofocus />
                         <InputError class="mt-1.5" :message="form.errors.title" />
                     </div>
@@ -111,7 +111,7 @@ const onUpdate = () => form.post(route('tickets.update', { ticket: props.ticket.
                     </div>
                 </div>
                 <div>
-                    <InputLabel for="description" value="Deskripsi" />
+                    <InputLabel for="description" value="Deskripsi" required />
                     <TextareaInput id="description" v-model="form.description" rows="9" placeholder="Deskripsi..." />
                     <InputError class="mt-1.5" :message="form.errors.description" />
                 </div>

@@ -1,6 +1,5 @@
 <script setup>
-import { computed } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { computed, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -14,7 +13,11 @@ const props = defineProps({
     },
 });
 
-const setting = usePage().props.setting.data;
+const setting = computed(() => usePage().props.setting.data);
+
+const generateUrl = (filePath) => window.location.origin + filePath;
+
+const backgroundImageUrl = ref(generateUrl('/assets/images/bg-app.png'))
 
 const maxWidthClass = computed(() => {
     return {
@@ -25,10 +28,17 @@ const maxWidthClass = computed(() => {
 </script>
 
 <template>
-    <main class="bg-gray--50">
+    <main class="bg-gray-50 bg-app" :style="{
+        backgroundImage: `url('${backgroundImageUrl}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        width: '100%',  // Untuk memastikan lebar penuh
+        height: '100vh',  // Sesuaikan dengan tinggi yang diinginkan
+    }">
         <div class="mx-auto md:h-screen flex flex-col justify-center items-center px-6 py-8">
             <a :href="route('home')" class="text-2xl font-semibold flex justify-center items-center mb-8 lg:mb-10">
-                <ApplicationLogo class="h-10 mr-4" />
+                <img class="rounded-md h-14 w-14 mr-4 object-cover" :src="[setting.logo ?? generateUrl('/assets/images/default-img.png')]"
+                    alt="App Logo">
                 <span class="self-center text-2xl font-bold whitespace-nowrap">{{ setting.name }}</span>
             </a>
             <!-- Card -->

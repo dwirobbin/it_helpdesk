@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Traits\Sluggable;
 use App\Enums\TicketStatusEnum;

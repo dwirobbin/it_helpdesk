@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Ticket;
 use App\Enums\RoleEnum;
+use Illuminate\Support\Arr;
 use App\Enums\TicketStatusEnum;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Requests\TicketRequest;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\TicketResource;
@@ -29,11 +29,12 @@ class TicketController extends Controller
 
         $tickets = Ticket::query()
             ->with('user:id,name,slug')
-            ->select(['ticket_number', 'title', 'slug', 'status', 'user_id'])
+            ->select(['ticket_number', 'title', 'slug', 'status', 'user_id', 'created_at'])
             ->when($searchTerm, function ($query) use ($searchTerm) {
                 $query->where('ticket_number', 'LIKE', "%$searchTerm%")
                     ->orWhere('title', 'LIKE', "%$searchTerm%")
-                    ->orWhere('status', 'LIKE', "%$searchTerm%");
+                    ->orWhere('status', 'LIKE', "%$searchTerm%")
+                    ->orWhere('created_at', 'LIKE', "%$searchTerm%");
             })
             ->when(auth()->user()->role_id === RoleEnum::STAFF->value, function ($query) {
                 $query->where('user_id', '=', auth()->id());
@@ -56,33 +57,34 @@ class TicketController extends Controller
 
         $validatedData = $request->validated();
 
-        $selectOnly = array_intersect_key($validatedData, array_flip([
-            'title', 'description', 'user_id', 'status',
-        ]));
-
         try {
-            if ($request->hasFile('image')) {
-                $path = 'image/complaints';
-                $file = $request->file('image')->store($path, 'public');
-                $validatedData['image'] = str_replace("$path/", '', $file);
-            }
+            $image = $request->hasFile('image')
+                ? $request->file('image')->hashName()
+                : null;
 
             Ticket::query()
                 ->create([
-                    ...$selectOnly,
-                    ...['image' => $validatedData['image']],
+                    ...Arr::only($validatedData, ['title', 'description', 'user_id', 'status']),
+                    ...['image' => $image],
                 ]);
+
+            if ($request->hasFile('image')) {
+                $path = 'image/complaints';
+                $request->file('image')->storeAs($path, $image, 'public');
+            }
+
+            session()->flash('message', [
+                'text' => 'Berhasil menambahkan tiket baru.',
+                'type' => 'success',
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'text' => 'Terjadi suatu kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Berhasil menambahkan tiket baru.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 
     /**
@@ -126,27 +128,30 @@ class TicketController extends Controller
 
         $validatedData = $request->validated();
 
-        $selectOnly = array_intersect_key($validatedData, array_flip([
-            'title', 'description', 'user_id', 'status',
-        ]));
-
         try {
-            if ($request->hasFile('image')) {
-                $filePath = 'image/complaints';
-                if (Storage::disk('public')->exists($filePath . '/' . $ticket->getRawOriginal('image'))) {
-                    Storage::disk('public')->delete($filePath . '/' . $ticket->getRawOriginal('image'));
-                };
+            $originalPhoto = $ticket->getRawOriginal('image');
 
-                $newFile = $request->file('image')->store($filePath, 'public');
-                $validatedData['image'] = str_replace("$filePath/", '', $newFile);
-            } else {
-                $validatedData['image'] = $ticket->getRawOriginal('image');
-            }
+            $image = match (true) {
+                $request->hasFile('image') => $request->file('image')->hashName(),
+                is_null($validatedData['image']) => null,
+                default => $originalPhoto
+            };
 
             $ticket->update([
-                ...$selectOnly,
-                ...['image' => $validatedData['image']]
+                ...Arr::only($validatedData, ['title', 'description', 'user_id', 'status',]),
+                ...['image' => $image]
             ]);
+
+            if ($request->hasFile('image')) {
+                $filePath = 'image/complaints';
+                if (Storage::disk('public')->exists($filePath . '/' . $originalPhoto)) {
+                    Storage::disk('public')->delete($filePath . '/' . $originalPhoto);
+                };
+
+                if ($request->hasFile('image')) {
+                    $request->file('image')->storeAs($filePath, $image, 'public');
+                }
+            }
 
             session()->flash('message', [
                 'text' => 'Data Tiket berhasil diperbarui.',
@@ -174,13 +179,13 @@ class TicketController extends Controller
         Gate::authorize('delete', $ticket);
 
         try {
-            $respond = $ticket->respond()->first();
+            $respond = $ticket->respond()->firstOrFail();
 
             $complaintImage = $ticket->getRawOriginal('image');
-            $respondImage = !is_null($respond) ? $respond->getRawOriginal('image') : null;
+            $respondImage = $respond->getRawOriginal('image');
 
             DB::transaction(function () use ($ticket, $respond) {
-                if (!is_null($respond)) $respond->delete();
+                $respond->delete();
                 $ticket->delete();
             });
 
@@ -193,19 +198,19 @@ class TicketController extends Controller
             if (Storage::disk('public')->exists($respondFilePath . '/' . $respondImage)) {
                 Storage::disk('public')->delete($respondFilePath . '/' . $respondImage);
             };
-        } catch (\Throwable $th) {
-            Log::error($th->getMessage());
 
-            return back()->with('message', [
+            session()->flash('message', [
+                'text' => 'Tiket berhasil dihapus.',
+                'type' => 'success',
+            ]);
+        } catch (\Throwable) {
+            session()->flash('message', [
                 'text' => 'Terjadi suatu kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Tiket berhasil dihapus.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 
     public function confirm(Ticket $ticket)
@@ -216,17 +221,19 @@ class TicketController extends Controller
             $ticket->update([
                 'status' => TicketStatusEnum::RESPONSE->value,
             ]);
+
+            session()->flash('message', [
+                'text' => 'Tiket berhasil dikonfirmasi.',
+                'type' => 'success',
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'text' => 'Terjadi suatu kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Tiket berhasil dikonfirmasi.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 
     public function solved(Ticket $ticket)
@@ -237,16 +244,18 @@ class TicketController extends Controller
             $ticket->update([
                 'status' => TicketStatusEnum::SOLVED->value,
             ]);
+
+            session()->flash('message', [
+                'text' => 'Tiket berhasil diselesaikan dan telah ditutup.',
+                'type' => 'success',
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'text' => 'Terjadi suatu kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Tiket berhasil diselesaikan dan telah ditutup.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 }

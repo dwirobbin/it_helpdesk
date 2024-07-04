@@ -291,6 +291,34 @@ const statusColor = (status) => {
                                                     </span>
                                                 </div>
                                             </th>
+                                            <th @click="handleSort('created_at')" scope="col"
+                                                class="p-4 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer">
+                                                <div class="flex items-center">
+                                                    Tgl. Pengaduan
+                                                    <span>
+                                                        <svg v-if="queries.column === 'created_at' && queries.direction === 'asc'"
+                                                            class="w-[15px] h-[15px] ms-1.5 text-gray-500" aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="3" d="M12 19V5m0 14-4-4m4 4 4-4" />
+                                                        </svg>
+                                                        <svg v-else-if="queries.column === 'created_at' && queries.direction === 'desc'"
+                                                            class="w-[15px] h-[15px] ms-1.5 text-gray-500" aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="3" d="M12 6v13m0-13 4 4m-4-4-4 4" />
+                                                        </svg>
+                                                        <svg v-else class="w-[15px] h-[15px] ms-1.5 text-gray-500" aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="3" d="M8 20V7m0 13-4-4m4 4 4-4m4-12v13m0-13 4 4m-4-4-4 4" />
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </th>
                                             <th @click="handleSort('status')" scope="col"
                                                 class="p-4 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer">
                                                 <div class="flex items-center">
@@ -339,6 +367,9 @@ const statusColor = (status) => {
                                                 </td>
                                                 <td class="p-4 whitespace-nowrap text-base font-medium text-gray-900">
                                                     {{ ticket.title }}
+                                                </td>
+                                                <td class="p-4 whitespace-nowrap text-base font-medium text-gray-900">
+                                                    {{ ticket.created_at.locale_day_date }}
                                                 </td>
                                                 <td class="p-4 whitespace-nowrap text-base font-medium">
                                                     <span :class="statusColor(ticket.status)"

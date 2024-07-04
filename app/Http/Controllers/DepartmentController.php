@@ -48,17 +48,19 @@ class DepartmentController extends Controller
         try {
             Department::query()
                 ->create($validatedData);
+
+            session()->flash('message', [
+                'type' => 'success',
+                'text' => 'Data berhasil ditambahkan.'
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'type' => 'error',
                 'text' => 'Terjadi suatu kesalahan.'
             ]);
         }
 
-        return back()->with('message', [
-            'type' => 'success',
-            'text' => 'Data berhasil ditambahkan.'
-        ]);
+        return back();
     }
 
     /**
@@ -112,16 +114,18 @@ class DepartmentController extends Controller
 
         try {
             $department->delete();
+
+            session()->flash('message', [
+                'text' => 'Data berhasil dihapus.',
+                'type' => 'success',
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'text' => 'Terjadi suatu kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Data berhasil dihapus.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 }

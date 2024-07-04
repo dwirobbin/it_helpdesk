@@ -164,17 +164,19 @@ class EmployeeController extends Controller
                     'nik' => $validatedData['nik'],
                 ]);
             });
+
+            session()->flash('message', [
+                'type' => 'success',
+                'text' => 'Data berhasil disimpan.'
+            ]);
         } catch (\Throwable) {
-            return to_route('employees.index')->with('message', [
+            session()->flash('message', [
                 'type' => 'error',
                 'text' => 'Terjadi suatu kesalahan.'
             ]);
         }
 
-        return to_route('employees.index')->with('message', [
-            'type' => 'success',
-            'text' => 'Data berhasil disimpan.'
-        ]);
+        return to_route('employees.index');
     }
 
     /**
@@ -248,17 +250,19 @@ class EmployeeController extends Controller
                     'nik' => $validatedData['nik'],
                 ]);
             });
+
+            session()->flash('message', [
+                'type' => 'success',
+                'text' => 'Data berhasil diperbarui.'
+            ]);
         } catch (\Throwable) {
-            return to_route('employees.index')->with('message', [
+            session()->flash('message', [
                 'type' => 'error',
                 'text' => 'Terjadi suatu kesalahan.'
             ]);
         }
 
-        return to_route('employees.index')->with('message', [
-            'type' => 'success',
-            'text' => 'Data berhasil diperbarui.'
-        ]);
+        return to_route('employees.index');
     }
 
     /**
@@ -269,12 +273,12 @@ class EmployeeController extends Controller
         Gate::authorize('delete', $employee);
 
         try {
-            $user = $employee->user()->first();
+            $user = $employee->user()->firstOrFail();
 
-            $userAvatar = !is_null($user) ? $user->getRawOriginal('photo') : null;
+            $userAvatar = $user->getRawOriginal('photo');
 
             DB::transaction(function () use ($employee, $user) {
-                if (!is_null($user)) $user->delete();
+                $user->delete();
                 $employee->delete();
             });
 
@@ -282,17 +286,19 @@ class EmployeeController extends Controller
             if (Storage::disk('public')->exists($avatarFilePath . '/' . $userAvatar)) {
                 Storage::disk('public')->delete($avatarFilePath . '/' . $userAvatar);
             };
+
+            session()->flash('message', [
+                'text' => 'Data berhasil dihapus.',
+                'type' => 'success',
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'text' => 'Terjadi suatu kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Data berhasil dihapus.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 
     /**
@@ -306,8 +312,10 @@ class EmployeeController extends Controller
             $validatedData = $request->validate([
                 'is_active_account' => ['required', 'boolean'],
             ], [
-                'is_active_account.required' => 'Akun Aktif? harus diisi.',
-                'is_active_account.boolean' => 'Akun Aktif? harus bernilai benar atau salah.',
+                'required' => ':attribute harus diisi.',
+                'boolean' => ':attribute harus bernilai benar atau salah.',
+            ], [
+                'is_active_account' => 'Akun Aktif?',
             ]);
 
             $employee->user()->update([
@@ -318,7 +326,7 @@ class EmployeeController extends Controller
                 'type' => 'error',
                 'text' => $e->getMessage()
             ]);
-        } catch (\Throwable $th) {
+        } catch (\Throwable) {
             return session()->flash('message', [
                 'type' => 'error',
                 'text' => 'Terjadi suatu kesalahan.'

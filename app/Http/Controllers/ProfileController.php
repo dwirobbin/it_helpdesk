@@ -35,33 +35,42 @@ class ProfileController extends Controller
 
         try {
             $user = $request->user();
+            $originalPhoto = $user->getRawOriginal('photo');
 
-            if ($request->hasFile('photo')) {
-                $filePath = 'image/avatars';
-                if (Storage::disk('public')->exists($filePath . '/' . $user->getRawOriginal('photo'))) {
-                    Storage::disk('public')->delete($filePath . '/' . $user->getRawOriginal('photo'));
-                };
-
-                $newFile = $request->file('photo')->store($filePath, 'public');
-                $validatedData['photo'] = str_replace("$filePath/", '', $newFile);
-            } else {
-                $validatedData['photo'] = $user->getRawOriginal('photo');
-            }
+            $avatar = match (true) {
+                $request->hasFile('photo') => $request->file('photo')->hashName(),
+                is_null($validatedData['photo']) => null,
+                default => $originalPhoto
+            };
 
             $user->update([
-                'photo' => $validatedData['photo'],
+                'photo' => $avatar,
+            ]);
+
+            if ($request->hasFile('photo') || is_null($avatar)) {
+                $path = 'image/avatars';
+
+                if (Storage::disk('public')->exists($path . '/' . $originalPhoto)) {
+                    Storage::disk('public')->delete($path . '/' . $originalPhoto);
+                };
+
+                if ($request->hasFile('photo')) {
+                    $request->file('photo')->storeAs($path, $avatar, 'public');
+                }
+            }
+
+            session()->flash('message', [
+                'text' => 'Data Berhasil Diperbaharui.',
+                'type' => 'success',
             ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'text' => 'Terjadi Suatu Kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Data Berhasil Diperbaharui.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 
     public function deleteAvatar(Request $request)
@@ -79,17 +88,19 @@ class ProfileController extends Controller
             if (Storage::disk('public')->exists($filePath . '/' . $fileName)) {
                 Storage::disk('public')->delete($filePath . '/' . $fileName);
             }
+
+            session()->flash('message', [
+                'text' => 'Foto Profil berhasil dihapus.',
+                'type' => 'success',
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'text' => 'Terjadi Suatu Kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Foto Profil berhasil dihapus.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 
     /**
@@ -105,17 +116,19 @@ class ProfileController extends Controller
             }
 
             $request->user()->save();
+
+            session()->flash('message', [
+                'text' => 'Data berhasil diperbarui.',
+                'type' => 'success',
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'text' => 'Terjadi Suatu Kesalahan.',
                 'type' => 'error',
             ]);
         }
 
-        return back()->with('message', [
-            'text' => 'Data berhasil diperbarui.',
-            'type' => 'success',
-        ]);
+        return back();
     }
 
     /**

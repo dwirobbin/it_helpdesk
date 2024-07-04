@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->enum('status', TicketStatusEnum::values());
             $table->timestamps();

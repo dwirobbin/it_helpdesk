@@ -76,7 +76,7 @@ const onSubmit = () => form.post(route('tickets.store'), {
                         <InputError class="mt-1.5" :message="form.errors.title" />
                     </div>
                     <div>
-                        <InputLabel for="picture" value="Gambar" required />
+                        <InputLabel for="picture" value="Gambar" />
                         <div class="flex flex-col items-center sm:flex-row sm:justify-between">
                             <div>
                                 <img class="mb-4 rounded-lg w-28 h-28 sm:mb-0 object-cover"

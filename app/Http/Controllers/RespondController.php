@@ -103,25 +103,32 @@ class RespondController extends Controller
         $validatedData = $request->validated();
 
         try {
-            if ($request->hasFile('image')) {
-                $filePath = 'image/responds';
-                if (Storage::disk('public')->exists($filePath . '/' . $respond->getRawOriginal('image'))) {
-                    Storage::disk('public')->delete($filePath . '/' . $respond->getRawOriginal('image'));
-                };
+            $originalPhoto = $respond->getRawOriginal('image');
 
-                $newFile = $request->file('image')->store($filePath, 'public');
-                $validatedData['image'] = str_replace("$filePath/", '', $newFile);
-            } else {
-                $validatedData['image'] = $respond->getRawOriginal('image');
-            }
+            $image = match (true) {
+                $request->hasFile('image') => $request->file('image')->hashName(),
+                is_null($validatedData['image']) => null,
+                default => $originalPhoto
+            };
 
             $respond->update([
                 ...$request->safe()->only(['ticket_id', 'text']),
                 ...[
-                    'image' => $validatedData['image'],
+                    'image' => $image,
                     'user_id' => auth()->id(),
                 ]
             ]);
+
+            if ($request->hasFile('image') || is_null($image)) {
+                $filePath = 'image/responds';
+                if (Storage::disk('public')->exists($filePath . '/' . $originalPhoto)) {
+                    Storage::disk('public')->delete($filePath . '/' . $originalPhoto);
+                };
+
+                if ($request->hasFile('image')) {
+                    $request->file('image')->storeAs($filePath, $image, 'public');
+                }
+            }
 
             session()->flash('message', [
                 'text' => 'Data Tanggapan berhasil diperbarui.',

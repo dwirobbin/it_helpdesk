@@ -71,8 +71,7 @@ class TicketRequest extends FormRequest
             'title' => ['required', 'string', 'min:5'],
             'description' => ['required', 'string', 'min:5'],
             'image' => [
-                Rule::when($this->routeIs('tickets.store'), 'required'),
-                Rule::when($this->routeIs('tickets.update'), 'nullable'),
+                'nullable',
                 Rule::when($this->hasFile('image'), ['image', 'mimes:png,jpg,jpeg,gif,webp', 'max:2048'])
             ],
         ];

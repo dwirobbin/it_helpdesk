@@ -1,13 +1,12 @@
 <script setup>
 import { computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TextareaInput from "@/Components/TextareaInput.vue";
 import { usePage } from '@inertiajs/vue3';
 
-const setting = usePage().props.setting.data;
+const setting = computed(() => usePage().props.setting.data);
 
 const props = defineProps({
     ticket: {
@@ -81,7 +80,8 @@ const statusColor = computed(() => {
             <div class="p-6 bg-white block border border-gray-200 rounded-lg shadow-sm max-w-6xl mx-auto" id="invoice">
                 <div class="grid grid-cols-2 items-center">
                     <div>
-                        <ApplicationLogo class="h-100 w-100" />
+                        <img class="rounded-md w-24 h-2w-24 object-cover" :src="[setting.logo ?? generateUrl('/assets/images/default-img.png')]"
+                            alt="App Logo">
                     </div>
 
                     <div class="text-right">
@@ -127,6 +127,12 @@ const statusColor = computed(() => {
                         </p>
                         <p>
                             Waktu Pengaduan: <span class="text-gray-500">{{ ticket.data.created_at.locale_time }}</span>
+                        </p>
+                        <p>
+                            Tgl Selesai:
+                            <span class="text-gray-500">
+                                {{ ticket.data.status === 'Terselesaikan' ? ticket.updated_at.locale_day_date_time : 'Belum Terselesaikan' }}
+                            </span>
                         </p>
                         <p>
                             Status: <span :class="statusColor" class="text-sm font-medium me-2 px-2.5 py-0.5 rounded border">

@@ -26,6 +26,12 @@ class AppSettingController extends Controller
     public function update(AppSettingRequest $request)
     {
         $appSetting = AppSetting::query()->first();
+        if (is_null($appSetting)) {
+            return back()->with('message', [
+                'type' => 'error',
+                'text' => 'Terjadi suatu kesalahan.',
+            ]);
+        }
 
         Gate::authorize('update', $appSetting);
 
@@ -52,16 +58,18 @@ class AppSettingController extends Controller
             }
 
             $appSetting->update($validatedData);
+
+            session()->flash('message', [
+                'type' => 'success',
+                'text' => 'Pengaturan Aplikasi berhasil diubah.',
+            ]);
         } catch (\Throwable) {
-            return back()->with('message', [
+            session()->flash('message', [
                 'type' => 'error',
                 'text' => 'Terjadi suatu kesalahan.',
             ]);
         }
 
-        return back()->with('message', [
-            'type' => 'success',
-            'text' => 'Pengaturan Aplikasi berhasil diubah.',
-        ]);
+        return back();
     }
 }
