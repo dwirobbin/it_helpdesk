@@ -398,7 +398,7 @@ const statusColor = (status) => {
                                                         {{ ticket.status }}
                                                     </span>
                                                 </td>
-                                                <td class="p-4 whitespace-nowrap space-x-2">
+                                                <td class="p-4 whitespace-nowrap space-x-2 flex flex-nowrap">
                                                     <Link
                                                         :href="route('ticket-chats.create', { _query: { ticket_number: ticket.ticket_number } })"
                                                         method="get" :only="['is_open_chat', 'ticket_chats']"
