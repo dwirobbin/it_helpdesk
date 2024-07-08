@@ -49,7 +49,7 @@ const onUpdate = () => form.put(route('departments.update', { department: props.
         </template>
 
         <template #body>
-            <form @submit.prevent="onUpdate" id="update">
+            <form @submit.prevent="onUpdate" id="update" class="p-6">
                 <InputLabel for="section" value="Divisi" required />
                 <TextInput type="text" id="section" v-model="form.section" placeholder="e.g. HRD" autofocus />
                 <InputError class="mt-1.5" :message="form.errors.section" />

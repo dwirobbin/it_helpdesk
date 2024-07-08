@@ -39,9 +39,9 @@ onMounted(() => {
                     <HumbergerButton />
 
                     <Link :href="route('home')" class="hidden lg:flex text-xl font-bold items-center lg:ml-2.5">
-                    <img class="mr-2 rounded-md w-8 h-8 object-cover" :src="[setting.logo ?? generateUrl('/assets/images/default-img.png')]"
+                    <img class="mr-2 rounded-md w-8 h-8 object-cover" :src="[setting.app_logo ?? generateUrl('/assets/images/default-img.png')]"
                         alt="App Logo">
-                    <span class="self-center whitespace-nowrap">{{ setting.name }}</span>
+                    <span class="self-center whitespace-nowrap">{{ setting.app_name }}</span>
                     </Link>
                     <div class="block lg:pl-[7.5rem]">
                         <h1 class="font-medium"><b>{{ user.name }}</b></h1>

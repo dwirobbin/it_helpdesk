@@ -18,6 +18,7 @@ class DateTimeResource extends JsonResource
             'locale_day_date_time' => $this->locale('id')->translatedFormat('D, d M Y, H:i:s'),
             'locale_day_date' => $this->locale('id')->translatedFormat('D, d M Y'),
             'locale_time' => $this->locale('id')->translatedFormat('H:i:s'),
+            'locale_hours_minutes' => $this->locale('id')->translatedFormat('H:i'),
             'locale_humans' => $this->locale('id')->diffForHumans(),
         ];
     }

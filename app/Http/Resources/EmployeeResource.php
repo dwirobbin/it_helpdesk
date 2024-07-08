@@ -16,8 +16,8 @@ class EmployeeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'nik' => $this->whenHas('nik', $this->nik),
-            'user' => $this->whenLoaded('user', fn () => new UserResource($this->user)),
+            'nik' => $this->whenHas('nik'),
+            'user' => UserResource::make($this->whenLoaded('user')),
             'position' => PositionResource::make($this->whenLoaded('position')),
             'department' => DepartmentResource::make($this->whenLoaded('department')),
         ];

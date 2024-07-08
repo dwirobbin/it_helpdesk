@@ -16,16 +16,17 @@ class TicketResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'ticket_number' => $this->whenHas('ticket_number', $this->ticket_number),
-            'title' => $this->whenHas('title', $this->title),
+            'ticket_number' => $this->whenHas('ticket_number'),
+            'title' => $this->whenHas('title'),
             'slug' => $this->slug,
-            'description' => $this->whenHas('description', $this->description),
-            'image' => $this->whenHas('image', $this->image),
-            'user' => $this->whenLoaded('user', fn () => UserResource::make($this->user)),
-            'status' => $this->whenHas('status', $this->status),
-            'respond' => $this->whenLoaded('respond', fn () => RespondResource::make($this->respond)),
-            'created_at' => $this->whenHas('created_at', DateTimeResource::make($this->created_at)),
-            'updated_at' => $this->whenHas('updated_at', DateTimeResource::make($this->updated_at)),
+            'description' => $this->whenHas('description'),
+            'image' => $this->whenHas('image'),
+            'user' => UserResource::make($this->whenLoaded('user')),
+            'status' => $this->whenHas('status'),
+            'respond' => RespondResource::make($this->whenLoaded('respond')),
+            'ticket_chats' => TicketChatResource::collection($this->whenLoaded('ticketChats')),
+            'created_at' => DateTimeResource::make($this->whenHas('created_at')),
+            'updated_at' => DateTimeResource::make($this->whenHas('updated_at')),
         ];
     }
 }

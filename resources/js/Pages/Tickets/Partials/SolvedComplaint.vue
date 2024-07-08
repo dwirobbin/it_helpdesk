@@ -18,7 +18,7 @@ const isShow = computed(() => !!props.complaint);
 
 const closeModal = () => emit('closeConfirmModal');
 
-const onConfirm = () => router.visit(route('tickets.confirm', { ticket: props.complaint.slug }), {
+const onSolve = () => router.visit(route('tickets.solved', { ticket: props.complaint.slug }), {
     method: 'patch',
     replace: true,
     onFinish: () => {
@@ -38,14 +38,14 @@ const onConfirm = () => router.visit(route('tickets.confirm', { ticket: props.co
 
         <!-- body -->
         <template #body>
-            <div class="text-center">
+            <div class="text-center p-6">
                 <svg class="w-20 h-20 text-red-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
                     </path>
                 </svg>
                 <h3 class="text-xl font-normal text-gray-500 mt-5">
-                    Apakah anda yakin ingin mengonfirmasi pengaduan dengan No. Tiket: <b>{{ complaint.ticket_number }}</b>?
+                    Apakah anda yakin ingin menyelesaikan pengaduan dengan No. Tiket: <b>{{ complaint.ticket_number }}</b>?
                 </h3>
             </div>
         </template>
@@ -53,7 +53,7 @@ const onConfirm = () => router.visit(route('tickets.confirm', { ticket: props.co
         <!-- footer -->
         <template #footer>
             <div class="flex justify-center">
-                <PrimaryButton type="button" @click="onConfirm" class="mr-2" autofocus>
+                <PrimaryButton type="button" @click="onSolve" class="mr-2" autofocus>
                     Ya, Saya yakin
                 </PrimaryButton>
                 <button type="button" @click="closeModal"

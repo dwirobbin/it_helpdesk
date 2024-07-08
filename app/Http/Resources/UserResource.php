@@ -19,10 +19,10 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'email' => $this->email,
-            'photo' => $this->whenHas('photo', $this->photo),
-            'role' => $this->whenLoaded('role', new RoleResource($this->role)),
-            'is_active' => $this->whenHas('is_active', $this->is_active),
-            'employee' => $this->whenLoaded('employee', fn () => new EmployeeResource($this->employee)),
+            'photo' => $this->whenHas('photo'),
+            'role' => RoleResource::make($this->whenLoaded('role')),
+            'is_active' => $this->whenHas('is_active'),
+            'employee' => EmployeeResource::make($this->whenLoaded('employee')),
         ];
     }
 }

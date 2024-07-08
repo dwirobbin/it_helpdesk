@@ -19,7 +19,7 @@ class AuthResource extends JsonResource
             'slug' => $this->slug,
             'email' => $this->email,
             'photo' => $this->photo,
-            'role' => $this->whenLoaded('role', new RoleResource($this->role)),
+            'role' => new RoleResource($this->whenLoaded('role')),
         ];
     }
 }

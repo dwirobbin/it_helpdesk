@@ -33,12 +33,12 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call([
-            AppSettingSeeder::class,
+            SettingSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
             // PositionSeeder::class,
             // DepartmentSeeder::class,
-            EmployeeSeeder::class,
+            // EmployeeSeeder::class,
             // TicketSeeder::class,
         ]);
     }

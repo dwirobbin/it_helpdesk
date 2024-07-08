@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class AppSetting extends Model
+class Setting extends Model
 {
     use HasFactory;
 
@@ -16,21 +16,35 @@ class AppSetting extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'slug',
-        'footer',
+        'app_name',
+        'app_footer',
+        'app_logo',
         'company_name',
         'company_telp',
         'company_address',
-        'logo',
+        'company_logo',
     ];
 
     /**
-     * Interact with the logo attribute.
+     * Interact with the appLogo attribute.
      *
      * return \Illuminate\Database\Eloquent\Casts\Attribute
      */
-    public function logo(): Attribute
+    public function appLogo(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string|null $value) => !is_null($value)
+                ? asset('storage/image/' . $value)
+                : null,
+        );
+    }
+
+    /**
+     * Interact with the companyLogo attribute.
+     *
+     * return \Illuminate\Database\Eloquent\Casts\Attribute
+     */
+    public function companyLogo(): Attribute
     {
         return Attribute::make(
             get: fn (string|null $value) => !is_null($value)

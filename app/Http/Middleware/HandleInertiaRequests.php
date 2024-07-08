@@ -2,12 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Resources\AppSettingResource;
-use App\Http\Resources\AuthResource;
-use App\Http\Resources\PermissionResource;
-use App\Models\AppSetting;
-use Illuminate\Http\Request;
+use App\Models\Setting;
 use Inertia\Middleware;
+use Illuminate\Http\Request;
+use App\Http\Resources\AuthResource;
+use App\Http\Resources\SettingResource;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -40,8 +39,8 @@ class HandleInertiaRequests extends Middleware
                     ? AuthResource::make($request->user()->load('role:id,name'))
                     : null,
             ],
-            'setting' => !is_null(AppSetting::query()->first())
-                ? AppSettingResource::make(AppSetting::query()->first())
+            'setting' => !is_null(Setting::query()->first())
+                ? SettingResource::make(Setting::query()->first())
                 : null,
             'flash' => $request->session()->get('message'),
         ];

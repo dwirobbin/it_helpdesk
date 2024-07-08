@@ -68,7 +68,7 @@ const onSubmit = () => form.post(route('tickets.store'), {
         </template>
 
         <template v-slot:body>
-            <form @submit.prevent="onSubmit" id="create" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form @submit.prevent="onSubmit" id="create" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 space-y-6">
                 <div class="space-y-6">
                     <div>
                         <InputLabel for="title" value="Keluhan" required />

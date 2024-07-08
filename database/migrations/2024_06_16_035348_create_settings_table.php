@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('app_settings', function (Blueprint $table) {
+        Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
-            $table->string('slug', 60);
-            $table->string('footer', 100);
+            $table->string('app_name', 50);
+            $table->string('app_footer', 100);
+            $table->string('app_logo')->nullable();
             $table->string('company_name', 50);
             $table->string('company_telp', 20)->nullable();
             $table->text('company_address')->nullable();
-            $table->string('logo')->nullable();
+            $table->string('company_logo')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_settings');
+        Schema::dropIfExists('settings');
     }
 };

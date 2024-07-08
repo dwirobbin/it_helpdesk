@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ticket extends Model
 {
@@ -83,5 +84,15 @@ class Ticket extends Model
     public function respond(): HasOne
     {
         return $this->hasOne(Respond::class);
+    }
+
+    /**
+     * Get all of the comments for the Ticket
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ticketChats(): HasMany
+    {
+        return $this->hasMany(TicketChat::class);
     }
 }

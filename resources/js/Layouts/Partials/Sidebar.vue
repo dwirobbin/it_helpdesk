@@ -41,9 +41,9 @@ onMounted(() => {
 
 <template>
     <aside id="sidebar"
-        class="fixed top-0 left-0 h-full z-20 pt-14 w-64 flex lg:flex flex-shrink-0 flex-col transition-transform -translate-x-full bg-white border-r border-gray-200 lg:translate-x-0">
+        class="fixed top-0 left-0 h-full z-20 pt-16 w-64 flex lg:flex flex-shrink-0 flex-col transition-transform -translate-x-full bg-white border-r border-gray-200 lg:translate-x-0">
         <div class="relative flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white pt-0">
-            <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+            <div class="flex-1 flex flex-col pt-2.5 pb-4 overflow-y-auto">
                 <div class="flex-1 px-3 bg-white divide-y space-y-1">
                     <ul class="space-y-2 pb-1">
                         <li>
@@ -118,32 +118,17 @@ onMounted(() => {
                             </ul>
                         </li>
                         <li>
-                            <button type="button"
+                            <Link :href="route('tickets.index')" method="get" preserve-scroll
                                 :class="[route().current('tickets.*') ? 'text-white bg-cyan-600 hover:text-gray-100 hover:bg-cyan-700 focus:ring-cyan-200' : 'text-gray-900 bg-white hover:bg-gray-100']"
-                                class="flex items-center w-full p-2 text-base font-normal transition duration-75 rounded-lg group"
-                                @click="toggleDropdownCollapse('dropdown-master-ticket')">
-                                <svg :class="[route().current('tickets.*') ? 'text-white group-hover:text-gray-100' : 'text-gray-500 group-hover:text-gray-900']"
-                                    class="w-6 h-6 transition duration-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-                                    height="24" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M4 5a2 2 0 0 0-2 2v2.5a1 1 0 0 0 1 1 1.5 1.5 0 1 1 0 3 1 1 0 0 0-1 1V17a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2.5a1 1 0 0 0-1-1 1.5 1.5 0 1 1 0-3 1 1 0 0 0 1-1V7a2 2 0 0 0-2-2H4Z" />
-                                </svg>
-                                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Master Tiket</span>
-                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="m1 1 4 4 4-4" />
-                                </svg>
-                            </button>
-                            <ul id="dropdown-master-ticket" :class="{ 'hidden': !route().current('tickets.*') }" class="mt-1 space-y-1"
-                                data-dropdown-id="dropdown-master-ticket">
-                                <li>
-                                    <Link :href="route('tickets.index')" method="get" preserve-state
-                                        :class="[route().current('tickets.*') ? 'bg-gray-200' : 'hover:bg-gray-100']"
-                                        class="flex items-center w-full p-2 text-gray-900 font-normal transition duration-75 rounded-lg pl-11 group">
-                                    Data Tiket
-                                    </Link>
-                                </li>
-                            </ul>
+                                class="text-base font-normal rounded-lg flex w-full items-center p-2 focus:ring-4 group">
+                            <svg :class="[route().current('tickets.*') ? 'text-white group-hover:text-gray-100' : 'text-gray-500 group-hover:text-gray-900']"
+                                class="w-6 h-6 transition duration-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M4 5a2 2 0 0 0-2 2v2.5a1 1 0 0 0 1 1 1.5 1.5 0 1 1 0 3 1 1 0 0 0-1 1V17a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2.5a1 1 0 0 0-1-1 1.5 1.5 0 1 1 0-3 1 1 0 0 0 1-1V7a2 2 0 0 0-2-2H4Z" />
+                            </svg>
+                            <span class="ml-3">Data Tiket</span>
+                            </Link>
                         </li>
                     </ul>
 
@@ -190,6 +175,22 @@ onMounted(() => {
                             </Link>
                         </li>
                     </ul>
+                </div>
+            </div>
+            <div class="bottom-0 left-0 justify-center w-full p-2 space-x-4 bg-white flex" sidebar-bottom-menu>
+                <Link :href="route('logout')" method="post" as="button" type="button" data-tooltip-target="tooltip-logout"
+                    class="inline-flex justify-center w-full p-2 font-medium bg-gray-300 text-gray-800 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                    </path>
+                </svg>
+                Keluar
+                </Link>
+                <div id="tooltip-logout" role="tooltip"
+                    class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
+                    Keluar
+                    <div class="tooltip-arrow" data-popper-arrow></div>
                 </div>
             </div>
         </div>

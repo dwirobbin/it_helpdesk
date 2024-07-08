@@ -4,10 +4,10 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Enums\RoleEnum;
-use App\Models\AppSetting;
+use App\Models\Setting;
 use Illuminate\Auth\Access\Response;
 
-class AppSettingPolicy
+class SettingPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -24,7 +24,7 @@ class AppSettingPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, AppSetting $appSetting): Response
+    public function update(User $user, Setting $setting): Response
     {
         return in_array($user->role_id, [
             RoleEnum::SUPER_ADMIN->value,

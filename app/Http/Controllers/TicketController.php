@@ -28,8 +28,8 @@ class TicketController extends Controller
         $direction = request()->query('direction') ?: 'desc';
 
         $tickets = Ticket::query()
-            ->with('user:id,name,slug')
-            ->select(['ticket_number', 'title', 'slug', 'status', 'user_id', 'created_at'])
+            ->with(['user:id,name,slug', 'ticketChats'])
+            ->select(['id', 'ticket_number', 'title', 'slug', 'status', 'user_id', 'created_at'])
             ->when($searchTerm, function ($query) use ($searchTerm) {
                 $query->where('ticket_number', 'LIKE', "%$searchTerm%")
                     ->orWhere('title', 'LIKE', "%$searchTerm%")

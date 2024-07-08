@@ -80,8 +80,8 @@ const statusColor = computed(() => {
             <div class="p-6 bg-white block border border-gray-200 rounded-lg shadow-sm max-w-6xl mx-auto" id="invoice">
                 <div class="grid grid-cols-2 items-center">
                     <div>
-                        <img class="rounded-md w-24 h-2w-24 object-cover" :src="[setting.logo ?? generateUrl('/assets/images/default-img.png')]"
-                            alt="App Logo">
+                        <img class="rounded-md w-32 h-20 object-cover"
+                            :src="[setting.company_logo ?? generateUrl('/assets/images/default-img.png')]" alt="Company Logo">
                     </div>
 
                     <div class="text-right">

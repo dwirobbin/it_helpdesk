@@ -49,7 +49,7 @@ const onUpdate = () => form.put(route('positions.update', { position: props.posi
         </template>
 
         <template v-slot:body>
-            <form @submit.prevent="onUpdate" id="update">
+            <form @submit.prevent="onUpdate" id="update" class="p-6">
                 <InputLabel for="title" value="Title" required />
                 <TextInput type="text" id="title" v-model="form.title" placeholder="e.g. Manager" autofocus />
                 <InputError class="mt-1.5" :message="form.errors.title" />

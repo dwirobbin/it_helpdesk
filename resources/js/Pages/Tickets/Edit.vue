@@ -80,7 +80,7 @@ const onUpdate = () => form.post(route('tickets.update', { ticket: props.ticket.
         </template>
 
         <template #body>
-            <form @submit.prevent="onUpdate" id="update" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form @submit.prevent="onUpdate" id="update" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 space-y-6">
                 <div class="space-y-6">
                     <div>
                         <InputLabel for="title" value="Keluhan" required />

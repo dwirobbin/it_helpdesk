@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps({
     show: {
@@ -71,13 +71,17 @@ const closeOnEscape = (e) => {
     }
 };
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
+const modalRef = ref(null);
+
+onMounted(() => {
+    document.addEventListener('keydown', closeOnEscape);
+});
 
 onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 </script>
 
 <template>
-    <div v-show="show" class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50" scroll-region>
+    <div v-show="show" class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50">
         <div v-if="show" class="fixed inset-0 transform transition-all" @click="close">
             <div class="absolute inset-0 bg-gray-500 opacity-75" />
         </div>
@@ -87,7 +91,7 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
             :class="customClass">
             <div class="relative w-full h-full px-4 md:h-auto" :class="maxWidthClass">
                 <!-- Modal content -->
-                <div class="bg-white rounded-lg shadow relative">
+                <div class="bg-white rounded-lg shadow relative" ref="modalRef">
                     <!-- Modal header -->
                     <div class="flex items-start justify-between p-5 border-b rounded-t">
                         <slot name="header"></slot>
@@ -101,9 +105,7 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
                         </button>
                     </div>
                     <!-- Modal body -->
-                    <div class="p-6 space-y-6" :class="[overflowYClass, heightClass]">
-                        <slot name="body"></slot>
-                    </div>
+                    <slot name="body"></slot>
                     <!-- Modal footer -->
                     <div class="items-center p-6 border-t border-gray-200 rounded-b">
                         <slot name="footer"></slot>
