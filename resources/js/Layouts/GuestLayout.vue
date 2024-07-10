@@ -37,9 +37,9 @@ const maxWidthClass = computed(() => {
     }">
         <div class="mx-auto md:h-screen flex flex-col justify-center items-center px-6 py-8">
             <a :href="route('home')" class="text-2xl font-semibold flex justify-center items-center mb-8 lg:mb-10">
-                <img class="rounded-md h-14 w-14 mr-4 object-cover" :src="[setting.logo ?? generateUrl('/assets/images/default-img.png')]"
+                <img class="rounded-md h-14 w-14 mr-4 object-cover" :src="[setting.app_logo ?? generateUrl('/assets/images/default-img.png')]"
                     alt="App Logo">
-                <span class="self-center text-2xl font-bold whitespace-nowrap">{{ setting.name }}</span>
+                <span class="self-center text-2xl font-bold whitespace-nowrap">{{ setting.app_name }}</span>
             </a>
             <!-- Card -->
             <div class="w-full p-4 space-y-8 sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800 lg:p-10 2xl:p-16" :class="maxWidthClass">
