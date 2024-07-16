@@ -131,7 +131,7 @@ const statusColor = computed(() => {
                         <p>
                             Tgl Selesai:
                             <span class="text-gray-500">
-                                {{ ticket.data.status === 'Terselesaikan' ? ticket.updated_at.locale_day_date_time : 'Belum Terselesaikan' }}
+                                {{ ticket.data.status === 'Terselesaikan' ? ticket.data.updated_at.locale_day_date_time : 'Belum Terselesaikan' }}
                             </span>
                         </p>
                         <p>

@@ -19,14 +19,14 @@ class TicketChatController extends Controller
     public function create(Request $request)
     {
         $ticketChats = TicketChat::query()
-            ->with(['ticket', 'user', 'user.role'])
+            ->with(['ticket', 'user'])
             ->whereRelation('ticket', 'ticket_number', '=', $request->query('ticket_number'))
             ->get();
 
-        $loggedInUserId = auth()->id();
+        $loggedInUserRoleId = auth()->user()->role_id;
 
         foreach ($ticketChats as $chat) {
-            if ($chat->user->role_id != $loggedInUserId) {
+            if ($chat->user->role_id != $loggedInUserRoleId) {
                 $chat->update(['is_readed' => true]);
             }
         }
