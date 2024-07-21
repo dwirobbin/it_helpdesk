@@ -22,10 +22,12 @@ class TicketRequest extends FormRequest
         'string'    => ':attribute harus berupa string.',
         'image'     => ':attribute harus berupa file gambar.',
         'mimes'     => ':attribute harus berformat :values.',
+        'exists'    => ':attribute yang dipilih tidak valid.',
     ];
     protected static $ATTRIBUTE_NAMES = [
         'title' => 'Keluhan',
         'description' => 'Deskripsi',
+        'room' => 'Ruangan',
         'image' => 'Gambar',
     ];
 
@@ -70,6 +72,9 @@ class TicketRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'min:5'],
             'description' => ['required', 'string', 'min:5'],
+            'room' => ['required', 'array', 'size:2'],
+            'room.slug' => ['required', 'string', 'exists:rooms,slug'],
+            'room.name' => ['required', 'string', 'exists:rooms,name'],
             'image' => [
                 'nullable',
                 Rule::when($this->hasFile('image'), ['image', 'mimes:png,jpg,jpeg,gif,webp', 'max:2048'])

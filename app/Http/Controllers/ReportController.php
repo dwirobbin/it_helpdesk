@@ -32,7 +32,12 @@ class ReportController extends Controller
         $validatedData['end_date'] = Carbon::createFromFormat('d/m/Y', $validatedData['end_date'])->format('Y-m-d');
 
         $tickets = Ticket::query()
-            ->with(['user:id,name'])
+            ->with([
+                'room:id,name,slug',
+                'user:id,name',
+                'respond:id,ticket_id,user_id',
+                'respond.user:id,name',
+            ])
             ->whereDate('created_at', '>=', $validatedData['start_date'])
             ->whereDate('updated_at', '<=', $validatedData['end_date'])
             ->when($request->filled('type'), fn (Builder $query) => $query->where('status', '=', $validatedData['type']))

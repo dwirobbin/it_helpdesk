@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
             // PositionSeeder::class,
             // DepartmentSeeder::class,
             EmployeeSeeder::class,
+            // RoomSeeder::class,
             // TicketSeeder::class,
         ]);
     }

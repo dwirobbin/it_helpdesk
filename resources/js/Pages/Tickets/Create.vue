@@ -1,34 +1,44 @@
 <script setup>
 import { computed, ref } from "vue";
-import { useForm, usePage } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import Modal from "@/Components/Modal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TextareaInput from "@/Components/TextareaInput.vue";
+import VueMultiselect from 'vue-multiselect';
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { route } from 'ziggy';
 
 const props = defineProps({
-    show: {
-        type: Boolean,
+    rooms: {
+        type: Object,
         required: true,
     },
 });
 
-const emit = defineEmits(['closeCreateModal']);
-
 const src = ref(null);
 
-const isShow = computed(() => props.show);
+const isShow = computed(() => !!props.rooms);
 
-const closeModal = () => emit('closeCreateModal');
+const closeModal = () => {
+    router.visit(route('tickets.index'), {
+        method: 'get',
+        replace: true,
+        preserveState: true,
+        onSuccess: () => {
+            form.reset();
+            form.clearErrors();
+        },
+    })
+};
 
 const generateUrl = (filePath) => window.location.origin + filePath;
 
 const form = useForm({
     title: null,
     description: null,
+    room: null,
     image: null,
 });
 
@@ -60,7 +70,7 @@ const onSubmit = () => form.post(route('tickets.store'), {
 
 <template>
 
-    <Head title="Create Department" />
+    <Head title="Create Ticket" />
 
     <Modal :show="isShow" @close="closeModal" maxWidth="5xl">
         <template v-slot:header>
@@ -68,7 +78,7 @@ const onSubmit = () => form.post(route('tickets.store'), {
         </template>
 
         <template v-slot:body>
-            <form @submit.prevent="onSubmit" id="create" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 space-y-6">
+            <form @submit.prevent="onSubmit" id="create" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
                 <div class="space-y-6">
                     <div>
                         <InputLabel for="title" value="Keluhan" required />
@@ -98,10 +108,17 @@ const onSubmit = () => form.post(route('tickets.store'), {
                         </div>
                     </div>
                 </div>
-                <div>
-                    <InputLabel for="description" value="Deskripsi" required />
-                    <TextareaInput id="description" v-model="form.description" rows="9" placeholder="Deskripsi..." />
-                    <InputError class="mt-1.5" :message="form.errors.description" />
+                <div class="space-y-6">
+                    <div>
+                        <InputLabel for="room" value="Ruangan" required />
+                        <VueMultiselect id="room" v-model="form.room" track-by="slug" label="name" :options="rooms.data" placeholder="Pilih" />
+                        <InputError class="mt-1.5" :message="form.errors.room" />
+                    </div>
+                    <div>
+                        <InputLabel for="description" value="Deskripsi" required />
+                        <TextareaInput id="description" v-model="form.description" rows="5" placeholder="Deskripsi..." />
+                        <InputError class="mt-1.5" :message="form.errors.description" />
+                    </div>
                 </div>
             </form>
         </template>

@@ -43,18 +43,14 @@ onMounted(() => {
                         alt="App Logo">
                     <span class="self-center whitespace-nowrap">{{ setting.app_name }}</span>
                     </Link>
-                    <div class="block lg:pl-[7.5rem]">
-                        <h1 class="font-medium"><b>{{ user.name }}</b></h1>
-                    </div>
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center space-x-1">
                     <div>
-                        <button type="button" id="dropdown-user-btn"
-                            class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-2 focus:ring-gray-300">
-                            <span class="sr-only">Open user menu</span>
+                        <button type="button" id="dropdown-user-btn" class="flex space-x-1 items-center text-sm rounded-full md:me-0">
+                            <h1 class="font-medium"><b>{{ user.role.name }}</b></h1>
                             <img class="w-[2.15rem] h-[2.15rem] rounded-full" :src="user?.photo" alt="user photo">
                         </button>
-                        <div class="z-50 my-4 absolute translate-x-[-20rem] hidden text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
+                        <div class="z-50 my-4 absolute translate-x-[-20rem] hidden text-base list-none bg-white divide-y divide-gray-100 rounded shadow border dark:bg-gray-700 dark:divide-gray-600"
                             id="dropdown-user-menu">
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
@@ -80,6 +76,10 @@ onMounted(() => {
                             </ul>
                         </div>
                     </div>
+                    <svg class="w-[18px] h-[18px] text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
+                    </svg>
                 </div>
             </div>
         </div>

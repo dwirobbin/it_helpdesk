@@ -17,8 +17,8 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'slug' => $this->slug,
-            'email' => $this->email,
+            'slug' => $this->whenHas('slug'),
+            'email' => $this->whenHas('email'),
             'photo' => $this->whenHas('photo'),
             'role' => RoleResource::make($this->whenLoaded('role')),
             'is_active' => $this->whenHas('is_active'),

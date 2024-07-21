@@ -8,6 +8,7 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RespondController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TicketChatController;
 use App\Http\Controllers\TicketController;
@@ -23,6 +24,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
     Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::prefix('/rooms')->name('rooms.')->controller(RoomController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'store')->name('store');
+        Route::put('/{room:slug}', 'update')->name('update');
+        Route::delete('/{room:slug}', 'destroy')->name('destroy');
+        Route::get('/{room:slug}/edit', 'edit')->name('edit');
+    });
 
     Route::prefix('/positions')->name('positions.')->controller(PositionController::class)->group(function () {
         Route::get('/', 'index')->name('index');
@@ -53,6 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/tickets')->name('tickets.')->controller(TicketController::class)->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/', 'store')->name('store');
+        Route::get('/create', 'create')->name('create');
         Route::get('/{ticket:slug}', 'show')->name('show');
         Route::post('/{ticket:slug}', 'update')->name('update');
         Route::delete('/{ticket:slug}', 'destroy')->name('destroy');

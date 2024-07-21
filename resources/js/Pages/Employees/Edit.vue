@@ -109,12 +109,12 @@ const onUpdate = () => form.put(route('employees.update', { employee: props.empl
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="col-span-1" :class="{ 'md:col-span-2': hasAnyRole(['Super Admin']) }">
                                 <InputLabel for="nik" value="NIK" required />
-                                <NumberInput id="nik" v-model="form.nik" placeholder="e.g. 2934205823034508" autofocus tabindex="1" />
+                                <NumberInput id="nik" v-model="form.nik" placeholder="cth: 2934205823034508" autofocus tabindex="1" />
                                 <InputError class="mt-2" :message="form.errors.nik" />
                             </div>
                             <div :class="[hasAnyRole(['Super Admin']) ? 'order-2' : 'md:order-3']">
                                 <InputLabel for="name" value="Nama" required />
-                                <TextInput type="text" id="name" v-model="form.name" placeholder="e.g. Xonny" tabindex="2" />
+                                <TextInput type="text" id="name" v-model="form.name" placeholder="cth: Xonny" tabindex="2" />
                                 <InputError class="mt-2" :message="form.errors.name" />
                             </div>
                             <div :class="[hasAnyRole(['Super Admin']) ? 'order-3 md:order-4' : 'md:order-2']">
@@ -143,7 +143,7 @@ const onUpdate = () => form.put(route('employees.update', { employee: props.empl
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="order-1">
                                 <InputLabel for="email" value="Email" required />
-                                <TextInput type="email" id="email" v-model="form.email" placeholder="e.g. xonny@domain.com" tabindex="6" />
+                                <TextInput type="email" id="email" v-model="form.email" placeholder="cth: xonny@domain.com" tabindex="6" />
                                 <InputError class="mt-2" :message="form.errors.email" />
                             </div>
                             <div class="order-2 md:order-3">

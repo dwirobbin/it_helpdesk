@@ -75,10 +75,10 @@ onMounted(() => {
                         </li>
                         <li>
                             <button type="button"
-                                :class="[route().current('positions.*') || route().current('departments.*') || route().current('employees.*') ? 'text-white bg-cyan-600 hover:text-gray-100 hover:bg-cyan-700 focus:ring-cyan-200' : 'text-gray-900 bg-white hover:bg-gray-100']"
+                                :class="[route().current('rooms.*') || route().current('positions.*') || route().current('departments.*') || route().current('employees.*') ? 'text-white bg-cyan-600 hover:text-gray-100 hover:bg-cyan-700 focus:ring-cyan-200' : 'text-gray-900 bg-white hover:bg-gray-100']"
                                 class="flex items-center w-full p-2 text-base font-normal transition duration-75 rounded-lg group"
                                 @click="toggleDropdownCollapse('dropdown-master-employee')">
-                                <svg :class="[route().current('positions.*') || route().current('departments.*') || route().current('employees.*') ? 'text-white group-hover:text-gray-100' : 'text-gray-500 group-hover:text-gray-900']"
+                                <svg :class="[route().current('rooms.*') || route().current('positions.*') || route().current('departments.*') || route().current('employees.*') ? 'text-white group-hover:text-gray-100' : 'text-gray-500 group-hover:text-gray-900']"
                                     class="w-6 h-6 transition duration-75" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                                     height="24" fill="currentColor" viewBox="0 0 24 24">
                                     <path fill-rule="evenodd"
@@ -92,8 +92,15 @@ onMounted(() => {
                                 </svg>
                             </button>
                             <ul id="dropdown-master-employee"
-                                :class="{ 'hidden': !route().current('positions.*') && !route().current('departments.*') && !route().current('employees.*') }"
+                                :class="{ 'hidden': !route().current('rooms.*') && !route().current('positions.*') && !route().current('departments.*') && !route().current('employees.*') }"
                                 class="mt-1 space-y-1" data-dropdown-id="dropdown-master-employee">
+                                <li v-if="hasAnyRole(['Super Admin'])">
+                                    <Link :href="route('rooms.index')" method="get" as="button" type="button"
+                                        :class="[route().current('rooms.index') ? 'bg-gray-200' : 'hover:bg-gray-100']"
+                                        class="flex items-center w-full p-2 text-gray-900 font-normal transition duration-75 rounded-lg pl-11 group">
+                                    Data Ruangan
+                                    </Link>
+                                </li>
                                 <li v-if="hasAnyRole(['Super Admin'])">
                                     <Link :href="route('positions.index')" method="get" as="button" type="button"
                                         :class="[route().current('positions.index') ? 'bg-gray-200' : 'hover:bg-gray-100']"

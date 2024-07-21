@@ -5,6 +5,7 @@ import Modal from "@/Components/Modal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TextareaInput from "@/Components/TextareaInput.vue";
+import VueMultiselect from 'vue-multiselect';
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { route } from 'ziggy';
@@ -14,13 +15,17 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    rooms: {
+        type: Object,
+        required: true,
+    },
 });
 
 const src = ref(props.ticket?.data.image);
 
-const isShow = computed(() => !!props.ticket);
+const isShow = computed(() => !!props.ticket && !!props.rooms);
 
-const closeModal = () => router.visit(route('tickets.index'), {
+const closeModal = () => router.visit(route('tickets.index', { page: usePage().props.tickets.meta.current_page }), {
     method: 'get',
     replace: true,
     preserveState: true,
@@ -37,6 +42,7 @@ const form = useForm({
     last_page: usePage().props.tickets.meta.last_page,
     title: props.ticket?.data.title,
     description: props.ticket?.data.description,
+    room: props.ticket?.data.room,
     image: props.ticket?.data.image,
 });
 
@@ -80,7 +86,7 @@ const onUpdate = () => form.post(route('tickets.update', { ticket: props.ticket.
         </template>
 
         <template #body>
-            <form @submit.prevent="onUpdate" id="update" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 space-y-6">
+            <form @submit.prevent="onUpdate" id="update" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
                 <div class="space-y-6">
                     <div>
                         <InputLabel for="title" value="Keluhan" required />
@@ -110,10 +116,17 @@ const onUpdate = () => form.post(route('tickets.update', { ticket: props.ticket.
                         </div>
                     </div>
                 </div>
-                <div>
-                    <InputLabel for="description" value="Deskripsi" required />
-                    <TextareaInput id="description" v-model="form.description" rows="9" placeholder="Deskripsi..." />
-                    <InputError class="mt-1.5" :message="form.errors.description" />
+                <div class="space-y-6">
+                    <div>
+                        <InputLabel for="room" value="Ruangan" required />
+                        <VueMultiselect id="room" v-model="form.room" track-by="slug" label="name" :options="rooms.data" placeholder="Pilih" />
+                        <InputError class="mt-1.5" :message="form.errors.room" />
+                    </div>
+                    <div>
+                        <InputLabel for="description" value="Deskripsi" required />
+                        <TextareaInput id="description" v-model="form.description" rows="5" placeholder="Deskripsi..." />
+                        <InputError class="mt-1.5" :message="form.errors.description" />
+                    </div>
                 </div>
             </form>
         </template>

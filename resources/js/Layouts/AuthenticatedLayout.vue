@@ -14,7 +14,7 @@ import Footer from '@/Layouts/Partials/Footer.vue';
 
         <Sidebar />
 
-        <div class="h-screen w-full flex flex-col justify-between bg-gray-50 relative overflow-y-auto lg:ml-64 pt-14">
+        <div id="main-content" class="h-screen w-full flex flex-col justify-between bg-gray-50 relative overflow-y-auto lg:ml-64 pt-14">
             <main>
                 <slot />
             </main>

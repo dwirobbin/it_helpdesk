@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use App\Models\User;
 use App\Traits\Sluggable;
 use App\Enums\TicketStatusEnum;
@@ -30,6 +29,7 @@ class Ticket extends Model
         'description',
         'image',
         'user_id',
+        'room_id',
         'status',
     ];
 
@@ -74,6 +74,16 @@ class Ticket extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the room that owns the Ticket
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
     }
 
     /**

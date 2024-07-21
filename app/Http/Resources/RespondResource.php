@@ -18,6 +18,7 @@ class RespondResource extends JsonResource
             'id' => $this->id,
             'text' => $this->text,
             'image' => $this->image,
+            'user' => UserResource::make($this->whenLoaded('user')),
         ];
     }
 }

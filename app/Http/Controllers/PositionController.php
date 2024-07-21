@@ -89,7 +89,7 @@ class PositionController extends Controller
 
             session()->flash('message', [
                 'type' => 'success',
-                'text' => 'Data berhasil diubah.'
+                'text' => 'Data berhasil diperbarui.'
             ]);
         } catch (\Throwable) {
             session()->flash('message', [

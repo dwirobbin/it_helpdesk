@@ -77,15 +77,15 @@ const statusColor = computed(() => {
         </div>
 
         <div class="p-4">
-            <div class="p-6 bg-white block border border-gray-200 rounded-lg shadow-sm max-w-6xl mx-auto" id="invoice">
-                <div class="grid grid-cols-2 items-center">
+            <div class="p-4 lg:p-6 bg-white block border border-gray-200 rounded-lg shadow-sm max-w-6xl mx-auto" id="invoice">
+                <div class="grid grid-cols-2 items-center space-x-2 px-0">
                     <div>
-                        <img class="rounded-md w-32 h-20 object-cover"
+                        <img class="rounded-md w-[9.5rem] h-[7.5rem] object-cover"
                             :src="[setting.company_logo ?? generateUrl('/assets/images/default-img.png')]" alt="Company Logo">
                     </div>
 
                     <div class="text-right">
-                        <p>
+                        <p class="">
                             {{ setting.company_name }}
                         </p>
                         <p class="text-gray-500 text-sm">
@@ -102,6 +102,9 @@ const statusColor = computed(() => {
                     <div>
                         <p class="font-bold text-gray-800">
                             Dari :
+                        </p>
+                        <p class="text-gray-500">
+                            Ruangan: {{ ticket.data.room.name ?? 'Belum disetel' }}
                         </p>
                         <p class="text-gray-500">
                             Divisi: {{ ticket.data.user.employee.department?.section ?? 'Belum disetel' }}
@@ -135,6 +138,12 @@ const statusColor = computed(() => {
                             </span>
                         </p>
                         <p>
+                            Diselesaikan Oleh:
+                            <span class="text-gray-500">
+                                {{ ticket.data.status === 'Terselesaikan' ? ticket.data.respond.user.name : 'Belum Ada' }}
+                            </span>
+                        </p>
+                        <p>
                             Status: <span :class="statusColor" class="text-sm font-medium me-2 px-2.5 py-0.5 rounded border">
                                 {{ ticket.data.status }}
                             </span>
@@ -143,7 +152,7 @@ const statusColor = computed(() => {
                 </div>
 
                 <!-- Invoice Items -->
-                <div class="-mx-4 mt-8 flow-root sm:mx-0">
+                <div class="mt-8 flow-root sm:mx-0">
                     <div class="min-w-full grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-6">
                             <h2 class="2xl font-medium border-b pb-5">Pengaduan</h2>

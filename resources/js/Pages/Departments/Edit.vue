@@ -23,7 +23,7 @@ const form = useForm({
     section: props.department?.data.section,
 });
 
-const closeModal = () => router.visit(route('departments.index'), {
+const closeModal = () => router.visit(route('departments.index', { page: usePage().props.departments.meta.current_page }), {
     method: 'get',
     replace: true,
     preserveState: true,
@@ -51,7 +51,7 @@ const onUpdate = () => form.put(route('departments.update', { department: props.
         <template #body>
             <form @submit.prevent="onUpdate" id="update" class="p-6">
                 <InputLabel for="section" value="Divisi" required />
-                <TextInput type="text" id="section" v-model="form.section" placeholder="e.g. HRD" autofocus />
+                <TextInput type="text" id="section" v-model="form.section" placeholder="cth: HRD" autofocus />
                 <InputError class="mt-1.5" :message="form.errors.section" />
             </form>
         </template>

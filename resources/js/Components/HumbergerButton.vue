@@ -1,21 +1,20 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { Drawer } from 'flowbite';
 
 const isShow = ref(false);
 const drawer = ref(null);
 
-function toggleSidebar() {
-    isShow.value = !isShow.value;
-    drawer.value.toggle();
-}
+watch(isShow, (value) => {
+    if (value) {
+        if (drawer.value) drawer.value.show();
 
-watch(isShow, () => {
-    if (isShow.value) {
         const sidebarBackdrop = document.querySelector('body > div[drawer-backdrop]');
         if (sidebarBackdrop) {
             sidebarBackdrop.addEventListener('click', () => isShow.value = false);
         }
+    } else {
+        if (drawer.value) drawer.value.hide();
     }
 });
 
@@ -26,11 +25,15 @@ onMounted(() => {
         backdropClasses: "bg-gray-900/30 fixed inset-0 z-10",
     });
 });
+
+onUnmounted(() => {
+    drawer.value.hide();
+});
 </script>
 
 <template>
-    <button type="button" id="toggleSidebarMobile" @click="toggleSidebar"
-        class="inline-flex items-center p-2 mr-2 text-sm text-gray-500 rounded-lg lg:hidden cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+    <button type="button" id="toggleSidebarMobile" @click="isShow = !isShow"
+        class="inline-flex items-center p-2 mr-2 text-sm text-gray-500 rounded-lg lg:hidden cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
         <svg v-if="isShow" id="toggleSidebarMobileHamburger" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"

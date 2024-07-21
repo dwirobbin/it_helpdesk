@@ -9,8 +9,10 @@ use Illuminate\Support\Arr;
 use App\Enums\TicketStatusEnum;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\TicketRequest;
+use App\Http\Resources\RoomResource;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\TicketResource;
+use App\Models\Room;
 use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
@@ -39,6 +41,12 @@ class TicketController extends Controller
             ->when(auth()->user()->role_id === RoleEnum::STAFF->value, function ($query) {
                 $query->where('user_id', '=', auth()->id());
             })
+            ->when(auth()->user()->role_id === RoleEnum::IT_SUPPORT->value, function ($query) {
+                $query->where('status', '!=', TicketStatusEnum::WAITING);
+            })
+            ->when(auth()->user()->role_id === RoleEnum::SUPER_ADMIN->value, function ($query) {
+                $query->where('status', '=', TicketStatusEnum::WAITING);
+            })
             ->orderBy($column, $direction)
             ->paginate($perPage)
             ->withQueryString();
@@ -46,6 +54,17 @@ class TicketController extends Controller
         return Inertia::render('Tickets/Index', array_merge([
             'tickets' => fn () => TicketResource::collection($tickets),
         ], $modalProps));
+    }
+
+    public function create()
+    {
+        $rooms = Room::query()
+            ->select(['slug', 'name'])
+            ->get();
+
+        return $this->index(modalProps: [
+            'rooms' => RoomResource::collection($rooms),
+        ]);
     }
 
     /**
@@ -62,10 +81,15 @@ class TicketController extends Controller
                 ? $request->file('image')->hashName()
                 : null;
 
+            $room = Room::query()
+                ->where('slug', '=', data_get($validatedData, 'room.slug'))
+                ->firstOrFail();
+
             Ticket::query()
                 ->create([
                     ...Arr::only($validatedData, ['title', 'description', 'user_id', 'status']),
-                    ...['image' => $image],
+                    'image' => $image,
+                    'room_id' => $room->id,
                 ]);
 
             if ($request->hasFile('image')) {
@@ -74,7 +98,7 @@ class TicketController extends Controller
             }
 
             session()->flash('message', [
-                'text' => 'Berhasil menambahkan tiket baru.',
+                'text' => 'Tiket berhasil dibuat.',
                 'type' => 'success',
             ]);
         } catch (\Throwable) {
@@ -96,10 +120,12 @@ class TicketController extends Controller
 
         $data = $ticket->load([
             'user:id,name,email',
+            'room:id,name',
             'user.employee:id,user_id,position_id,department_id,nik',
             'user.employee.position:id,title',
             'user.employee.department:id,section',
-            'respond:id,ticket_id,text,image',
+            'respond:id,ticket_id,user_id,text,image',
+            'respond.user:id,name',
         ]);
 
         return Inertia::render('Tickets/Show', [
@@ -114,8 +140,15 @@ class TicketController extends Controller
     {
         Gate::authorize('update', $ticket);
 
+        $data = $ticket->load(['room:id,slug,name']);
+
+        $rooms = Room::query()
+            ->select(['slug', 'name'])
+            ->get();
+
         return $this->index([
-            'ticket' => TicketResource::make($ticket),
+            'ticket' => TicketResource::make($data),
+            'rooms' => RoomResource::collection($rooms),
         ]);
     }
 
@@ -137,9 +170,14 @@ class TicketController extends Controller
                 default => $originalPhoto
             };
 
+            $room = Room::query()
+                ->where('slug', '=', data_get($validatedData, 'room.slug'))
+                ->firstOrFail();
+
             $ticket->update([
                 ...Arr::only($validatedData, ['title', 'description', 'user_id', 'status',]),
-                ...['image' => $image]
+                'image' => $image,
+                'room_id' => $room->id,
             ]);
 
             if ($request->hasFile('image')) {
@@ -154,7 +192,7 @@ class TicketController extends Controller
             }
 
             session()->flash('message', [
-                'text' => 'Data Tiket berhasil diperbarui.',
+                'text' => 'Tiket berhasil diperbarui.',
                 'type' => 'success',
             ]);
         } catch (\Throwable) {
@@ -215,7 +253,7 @@ class TicketController extends Controller
 
     public function confirm(Ticket $ticket)
     {
-        Gate::authorize('updateStatus', $ticket);
+        Gate::authorize('updateStatusToConfirm', $ticket);
 
         try {
             $ticket->update([
@@ -238,7 +276,7 @@ class TicketController extends Controller
 
     public function solved(Ticket $ticket)
     {
-        Gate::authorize('updateStatus', $ticket);
+        Gate::authorize('updateStatusToSolve', $ticket);
 
         try {
             $ticket->update([

@@ -76,10 +76,21 @@ class TicketPolicy
     /**
      * Determine whether the user can update status to confirm the model.
      */
-    public function updateStatus(User $user, Ticket $ticket): Response
+    public function updateStatusToConfirm(User $user, Ticket $ticket): Response
     {
         return in_array($user->role_id, [
             RoleEnum::SUPER_ADMIN->value,
+        ]) && auth()->check()
+            ? Response::allow()
+            : Response::deny('Anda tidak memiliki akses.');
+    }
+
+    /**
+     * Determine whether the user can update status to confirm the model.
+     */
+    public function updateStatusToSolve(User $user, Ticket $ticket): Response
+    {
+        return in_array($user->role_id, [
             RoleEnum::IT_SUPPORT->value,
         ]) && auth()->check()
             ? Response::allow()

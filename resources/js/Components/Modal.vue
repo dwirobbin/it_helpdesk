@@ -46,19 +46,6 @@ const maxWidthClass = computed(() => {
     }[props.maxWidth];
 });
 
-const heightClass = computed(() => {
-    return {
-        '120': 'h-100',
-        '116': 'h-[29rem]',
-    }[props.height];
-});
-
-const overflowYClass = computed(() => {
-    return {
-        'y-auto': 'overflow-y-auto',
-    }[props.overflow];
-});
-
 const close = () => {
     if (props.closeable) {
         emit('close');
@@ -83,7 +70,7 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 <template>
     <div v-show="show" class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50">
         <div v-if="show" class="fixed inset-0 transform transition-all" @click="close">
-            <div class="absolute inset-0 bg-gray-500 opacity-75" />
+            <div class="absolute inset-0 bg-gray-500 opacity-60" />
         </div>
 
         <div v-if="show"

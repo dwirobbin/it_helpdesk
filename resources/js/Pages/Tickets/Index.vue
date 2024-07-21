@@ -27,6 +27,10 @@ const props = defineProps({
         type: Object,
         default: () => { },
     },
+    rooms: {
+        type: Object,
+        default: () => { },
+    },
     respond: {
         type: Object,
         default: () => { },
@@ -97,12 +101,6 @@ watch(
     }
 );
 // End of filters
-
-// Begin of modal create
-const showCreateModal = ref(false);
-
-const toggleShowCreatModal = () => showCreateModal.value = !showCreateModal.value;
-// End of modal create
 
 const showModalChat = toRef(props.is_open_chat);
 
@@ -221,15 +219,15 @@ const statusColor = (status) => {
                             </div>
                         </div>
                         <div class="flex justify-between items-center ml-auto space-x-2 sm:space-x-3 divide-x divide-gray-100">
-                            <button v-if="hasAnyRole(['Staff'])" type="button" @click="toggleShowCreatModal"
+                            <Link v-if="hasAnyRole(['Staff'])" :href="route('tickets.create')" :only="['rooms']"
                                 class="w-1/2 text-white bg-cyan-600 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium inline-flex items-center justify-center rounded-lg text-sm px-2 sm:px-3 py-2 text-center sm:w-auto">
-                                <svg class="-ml-1 mr-1 h-6 w-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                Tambah
-                            </button>
+                            <svg class="-ml-1 mr-1 h-6 w-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Tambah
+                            </Link>
                             <div class="ml-0 flex items-center">
                                 <label class="px-2 text-gray-500 whitespace-nowrap">Per Page</label>
                                 <select id="countries" v-model="queries.per_page"
@@ -314,7 +312,7 @@ const statusColor = (status) => {
                                                 </div>
                                             </th>
                                             <th @click="handleSort('created_at')" scope="col"
-                                                class="p-4 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer">
+                                                class="p-4 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer whitespace-nowrap">
                                                 <div class="flex items-center">
                                                     Tgl. Pengaduan
                                                     <span>
@@ -424,72 +422,69 @@ const statusColor = (status) => {
                                                     Chat
                                                     </Link>
 
-                                                    <template v-if="hasAnyRole(['Super Admin', 'It Support'])">
-                                                        <button type="button" v-if="ticket.status === 'Dalam Antrian'"
-                                                            @click="toggleConfirmModal('confirm-complaint', ticket.ticket_number, ticket.slug)"
-                                                            class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">
+                                                    <button type="button" v-if="hasAnyRole(['Super Admin']) && ticket.status === 'Dalam Antrian'"
+                                                        @click="toggleConfirmModal('confirm-complaint', ticket.ticket_number, ticket.slug)"
+                                                        class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300">
+                                                        <svg class="mr-1.5 w-[20px] h-[20px] text-white" aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                        </svg>
+                                                        Konfirmasi
+                                                    </button>
+                                                    <Link v-if="hasAnyRole(['It Support']) && ticket.status === 'Menunggu Diproses'"
+                                                        :href="route('responds.create', { ticket: ticket.slug })" method="get" preserve-state
+                                                        :only="['ticket', 'is_respond']"
+                                                        class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-lg bg-purple-500 hover:bg-purple-600 focus:ring-4 focus:ring-purple-300">
+                                                    <svg class="mr-1.5 w-[20px] h-[20px] text-white" aria-hidden="true"
+                                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z" />
+                                                    </svg>
+                                                    Tanggapi
+                                                    </Link>
+                                                    <div v-if="hasAnyRole(['It Support']) && ticket.status === 'Sedang Diproses'"
+                                                        class="flex space-x-2">
+                                                        <Link :href="route('responds.edit', { respond: ticket.slug })" method="get"
+                                                            preserve-state :only="['ticket', 'respond']"
+                                                            class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-lg bg-amber-500 hover:bg-amber-600 focus:ring-4 focus:ring-amber-300">
+                                                        <svg class="mr-1.5 h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
+                                                            </path>
+                                                            <path fill-rule="evenodd"
+                                                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        Edit
+                                                        </Link>
+                                                        <button type="button"
+                                                            @click="toggleConfirmModal('confirm-solved', ticket.ticket_number, ticket.slug)"
+                                                            class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-green-500 rounded-lg hover:bg-green-600 focus:ring-4 focus:ring-green-300">
                                                             <svg class="mr-1.5 w-[20px] h-[20px] text-white" aria-hidden="true"
                                                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                                                 viewBox="0 0 24 24">
                                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                                    stroke-width="2" d="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                             </svg>
-                                                            Konfirmasi
+                                                            Selesaikan
                                                         </button>
-                                                        <Link v-if="ticket.status === 'Menunggu Diproses'"
-                                                            :href="route('responds.create', { ticket: ticket.slug })" method="get" preserve-state
-                                                            :only="['ticket', 'is_respond']"
-                                                            class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-lg bg-purple-500 hover:bg-purple-600 focus:ring-4 focus:ring-purple-300">
+                                                    </div>
+                                                    <button type="button" v-if="hasAnyRole(['It Support']) && ticket.status === 'Terselesaikan'"
+                                                        class="inline-flex items-center text-center text-white bg-gray-800 border border-gray-300 font-medium rounded-lg text-sm p-2 cursor-default">
                                                         <svg class="mr-1.5 w-[20px] h-[20px] text-white" aria-hidden="true"
                                                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                                             viewBox="0 0 24 24">
                                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
-                                                                d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z" />
+                                                                d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
                                                         </svg>
-                                                        Tanggapi
-                                                        </Link>
-                                                        <div v-if="ticket.status === 'Sedang Diproses'" class="flex space-x-2">
-                                                            <Link :href="route('responds.edit', { respond: ticket.slug })" method="get"
-                                                                preserve-state :only="['ticket', 'respond']"
-                                                                class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-lg bg-amber-500 hover:bg-amber-600 focus:ring-4 focus:ring-amber-300">
-                                                            <svg class="mr-1.5 h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
-                                                                xmlns="http://www.w3.org/2000/svg">
-                                                                <path
-                                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
-                                                                </path>
-                                                                <path fill-rule="evenodd"
-                                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                                    clip-rule="evenodd"></path>
-                                                            </svg>
-                                                            Edit
-                                                            </Link>
-                                                            <button type="button"
-                                                                @click="toggleConfirmModal('confirm-solved', ticket.ticket_number, ticket.slug)"
-                                                                class="inline-flex items-center p-2 text-sm font-medium text-center text-white bg-green-500 rounded-lg hover:bg-green-600 focus:ring-4 focus:ring-green-300">
-                                                                <svg class="mr-1.5 w-[20px] h-[20px] text-white" aria-hidden="true"
-                                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2"
-                                                                        d="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                                </svg>
-                                                                Selesaikan
-                                                            </button>
-                                                        </div>
-                                                        <button type="button" v-if="ticket.status === 'Terselesaikan'"
-                                                            class="inline-flex items-center text-center text-white bg-gray-800 border border-gray-300 font-medium rounded-lg text-sm p-2 cursor-default">
-                                                            <svg class="mr-1.5 w-[20px] h-[20px] text-white" aria-hidden="true"
-                                                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                                                viewBox="0 0 24 24">
-                                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z" />
-                                                            </svg>
-                                                            Selesai
-                                                        </button>
-                                                    </template>
+                                                        Selesai
+                                                    </button>
                                                 </td>
                                                 <td class="p-4 w-1/12 whitespace-nowrap space-x-2">
                                                     <Link v-if="hasAnyRole(['Super Admin', 'It Support']) || ticket.user.slug === user.slug"
@@ -507,7 +502,7 @@ const statusColor = (status) => {
                                                     </Link>
                                                     <Link v-if="ticket.status === 'Dalam Antrian' && ticket.user.slug === user.slug"
                                                         :href="route('tickets.edit', { ticket: ticket.slug })" method="get" preserve-state
-                                                        :only="['ticket']"
+                                                        :only="['ticket', 'rooms']"
                                                         class="inline-flex items-center p-2 text-sm font-medium text-center text-white rounded-lg bg-amber-500 hover:bg-amber-600 focus:ring-4 focus:ring-amber-300">
                                                     <svg class="mr-1.5 h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
                                                         xmlns="http://www.w3.org/2000/svg">
@@ -558,10 +553,10 @@ const statusColor = (status) => {
         <Chat v-if="showModalChat" :show="showModalChat" :ticket_chats="ticket_chats" @close-chat-modal="toggleShowChatModal" />
 
         <!-- Create -->
-        <Create v-if="showCreateModal" :show="showCreateModal" @close-create-modal="toggleShowCreatModal" />
+        <Create v-if="props.rooms && !props.ticket" :rooms="props.rooms" />
 
         <!-- Edit -->
-        <Edit v-if="ticket && !respond && !showModalChat" :ticket="ticket" />
+        <Edit v-if="props.ticket && props.rooms" :ticket="ticket" :rooms=props.rooms />
 
         <!-- Confirm Delete Modal -->
         <Delete v-if="isShowConfirmModal && dataConfirm.component_id === 'confirm-delete'" :complaint="dataConfirm"
@@ -576,7 +571,7 @@ const statusColor = (status) => {
             @close-confirm-modal="toggleConfirmModal" />
 
         <!-- Respond -->
-        <CreateRespond v-if="ticket && is_respond" :ticket="ticket" />
+        <CreateRespond v-if="props.ticket && props.is_respond" :ticket="ticket" />
 
         <!-- Edit -->
         <EditRespond v-if="props.ticket && props.respond" :ticket="props.ticket" :respond="props.respond" />

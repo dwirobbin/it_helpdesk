@@ -102,7 +102,7 @@ const createWorksheet = (header, aoa) => {
 // Function to adjust column widths based on content length
 const adjustColumnWidths = (ws, aoa) => {
     const colWidths = [];
-    const extraWidth = 2; // Additional width for each column
+    const extraWidth = 8; // Additional width for each column
 
     aoa.forEach(row => {
         row.forEach((cell, colIndex) => {
@@ -173,12 +173,12 @@ const onExportToExcel = () => {
                     class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="">
                         <InputLabel for="date-of-birth" value="Tanggal Mulai" required />
-                        <DatePickerInput id="date-of-birth" v-model="form.start_date" placeholder="e.g. 01/05/2024" />
+                        <DatePickerInput id="date-of-birth" v-model="form.start_date" placeholder="cth: 01/05/2024" />
                         <InputError class="mt-1.5" :message="form.errors.start_date" />
                     </div>
                     <div class="">
                         <InputLabel for="date-of-birth" value="Tanggal Akhir" required />
-                        <DatePickerInput id="date-of-birth" v-model="form.end_date" placeholder="e.g. 06/05/2024" />
+                        <DatePickerInput id="date-of-birth" v-model="form.end_date" placeholder="cth: 06/05/2024" />
                         <InputError class="mt-1.5" :message="form.errors.end_date" />
                     </div>
                     <div class="">
@@ -241,19 +241,26 @@ const onExportToExcel = () => {
                                                 Nama
                                             </th>
                                             <th scope="col"
-                                                class="p-4 w-1/6 text-left whitespace-nowrap text-xs font-medium text-gray-500 uppercase cursor-pointer">
+                                                class="p-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 uppercase cursor-pointer">
+                                                Ruangan
+                                            </th>
+                                            <th scope="col"
+                                                class="p-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 uppercase cursor-pointer">
                                                 Keluhan
                                             </th>
                                             <th scope="col"
-                                                class="p-4 w-1/5 text-left whitespace-nowrap text-xs font-medium text-gray-500 uppercase">
+                                                class="p-4 w-32 text-left whitespace-wrap text-xs font-medium text-gray-500 uppercase">
                                                 Tgl Pengaduan
                                             </th>
                                             <th scope="col"
-                                                class="p-4 w-1/6 text-left whitespace-nowrap text-xs font-medium text-gray-500 uppercase">
+                                                class="p-4 w-32 text-left whitespace-wrap text-xs font-medium text-gray-500 uppercase">
                                                 Tgl Selesai
                                             </th>
+                                            <th scope="col" class="p-4 text-left whitespace-wrap text-xs font-medium text-gray-500 uppercase">
+                                                Diselesaikan Oleh
+                                            </th>
                                             <th scope="col"
-                                                class="p-4 w-1/6 text-left whitespace-nowrap text-xs font-medium text-gray-500 uppercase cursor-pointer">
+                                                class="p-4 text-left whitespace-nowrap text-xs font-medium text-gray-500 uppercase cursor-pointer">
                                                 Status
                                             </th>
                                         </tr>
@@ -270,16 +277,22 @@ const onExportToExcel = () => {
                                                 <td class="p-4 text-base text-wrap font-medium text-gray-900">
                                                     {{ ticket.user.name }}
                                                 </td>
-                                                <td class="p-4 w-1/6 text-base font-medium text-wrap text-gray-900">
+                                                <td class="p-4 text-base text-wrap font-medium text-gray-900">
+                                                    {{ ticket.room.name }}
+                                                </td>
+                                                <td class="p-4 text-base font-medium text-wrap text-gray-900">
                                                     {{ ticket.title }}
                                                 </td>
-                                                <td class="p-4 w-1/5 text-base font-medium text-wrap text-gray-900">
+                                                <td class="p-4 text-base font-medium text-wrap text-gray-900">
                                                     {{ ticket.created_at.locale_day_date_time }}
                                                 </td>
-                                                <td class="p-4 w-1/6 text-base font-medium text-wrap text-gray-900">
+                                                <td class="p-4 text-base font-medium text-wrap text-gray-900">
                                                     {{ ticket.status === 'Terselesaikan' ? ticket.updated_at.locale_day_date_time : 'Belum Terselesaikan' }}
                                                 </td>
-                                                <td class="p-4 w-1/6 whitespace-nowrap">
+                                                <td class="p-4 text-base font-medium text-wrap text-gray-900">
+                                                    {{ ticket.status === 'Terselesaikan' ? ticket.respond.user.name : 'Belum Ada' }}
+                                                </td>
+                                                <td class="p-4 whitespace-wrap">
                                                     <span :class="statusColor(ticket.status)" class="rounded text-base font-medium">
                                                         {{ ticket.status }}
                                                     </span>

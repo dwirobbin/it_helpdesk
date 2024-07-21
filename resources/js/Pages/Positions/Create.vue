@@ -46,7 +46,7 @@ const onSubmit = () => form.post(route('positions.store'), {
         <template v-slot:body>
             <form @submit.prevent="onSubmit" id="create" class="p-6">
                 <InputLabel for="title" value="Title" required />
-                <TextInput type="text" id="title" v-model="form.title" placeholder="e.g. Manager" autofocus />
+                <TextInput type="text" id="title" v-model="form.title" placeholder="cth: Manager" autofocus />
                 <InputError class="mt-1.5" :message="form.errors.title" />
             </form>
         </template>

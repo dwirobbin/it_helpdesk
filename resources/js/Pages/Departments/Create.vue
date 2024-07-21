@@ -46,7 +46,7 @@ const onSubmit = () => form.post(route('departments.store'), {
         <template v-slot:body>
             <form @submit.prevent="onSubmit" id="create" class="p-6">
                 <InputLabel for="section" value="Divisi" required />
-                <TextInput type="text" id="section" v-model="form.section" placeholder="e.g. HRD" autofocus />
+                <TextInput type="text" id="section" v-model="form.section" placeholder="cth: HRD" autofocus />
                 <InputError class="mt-1.5" :message="form.errors.section" />
             </form>
         </template>

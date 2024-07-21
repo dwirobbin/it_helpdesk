@@ -22,6 +22,7 @@ class TicketResource extends JsonResource
             'description' => $this->whenHas('description'),
             'image' => $this->whenHas('image'),
             'user' => UserResource::make($this->whenLoaded('user')),
+            'room' => RoomResource::make($this->whenLoaded('room')),
             'status' => $this->whenHas('status'),
             'respond' => RespondResource::make($this->whenLoaded('respond')),
             'ticket_chats' => TicketChatResource::collection($this->whenLoaded('ticketChats')),
